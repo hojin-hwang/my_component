@@ -3,7 +3,7 @@ class NameCard extends ComponentABS{
     {
         super();
         this.user_data = user_data;
-
+        this.editable = this.getAttribute('editable');
     }
     static get observedAttributes() {return ['editable']; }
 
@@ -15,10 +15,11 @@ class NameCard extends ComponentABS{
             {
                 const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
                 node.closest('section').style.color = randomColor;
+                
             }
             if (node.className.match(/command-delete-card/))
             {
-                this.post_message("done_delete_name_card", this.user_data);
+                post_message("done_delete_name_card", this.user_data);
                 this.remove();
             }
         });
@@ -28,15 +29,20 @@ class NameCard extends ComponentABS{
         //if(event.origin !== window_url) return;
         if(event.data?.msg) 
         {
-            //로그인 되었다면 
+            //로그인 되었다면 color버튼을 활성화 한다.
             if(event.data.msg === `status_login`) 
             {
                 this.setAttribute('editable', 'editable');
+                console.log("component recevie log in status..")
             }
-            //로그아웃 되었다면 
             if(event.data.msg === `status_logout`) 
             {
                 this.setAttribute('editable', 'nonEditable');
+                console.log("component recevie log out status..")
+            }
+            if(event.data.msg === `${this.message_prefix}_show_user_name_card`) 
+            {
+                this._render(event.data.data);
             }
         }
     }
@@ -53,11 +59,8 @@ class NameCard extends ComponentABS{
     attributeChangedCallback(name, oldValue, newValue) {
         console.log('Custom square element attributes changed.');
         console.log(`${name}, ${oldValue}, ${newValue},`);
-        if(name === 'editable' && this.shadowRoot)
-        {
-            this.editable = newValue;
-            this._setSettingVisible(newValue);
-        }
+        this.editable = newValue;
+        this._render(this.user_data);                
     }
 
     getComponentProp(data_set_value)
@@ -78,9 +81,7 @@ class NameCard extends ComponentABS{
             const temp_user_data = JSON.parse(this.getAttribute('user_data'));
             user_data = {...temp_user_data};
         }
-        this.editable = this.getAttribute('editable');
-
-        const shadowRoot = this.attachShadow({mode: 'open'});
+        this.innerHTML = '';
         const template = document.querySelector('#name_card');
         const user_image = document.createElement('img');
         user_image.setAttribute('slot', 'user_image');
@@ -93,11 +94,20 @@ class NameCard extends ComponentABS{
         <span slot="phone">${user_data?.phone}</span>
         <span slot="role">${user_data?.role}</span>
         <p slot="company_name">${user_data?.company_name}</p>
-        <div slot="setting" class="settings"></div>
         `;//이렇게 직접 텍스트로 삽입도 가능
-        shadowRoot.appendChild(template.content.cloneNode(true));
+
+        if(this.shadowRoot) 
+        {
+            this.shadowRoot.textContent = '';
+            this.shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+        else
+        {
+            const shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.appendChild(template.content.cloneNode(true));
+        }
         this._setSettingVisible(this.editable);
-        console.log(this.editable);
+        
     }
 
     _setSettingVisible(visible)
