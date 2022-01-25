@@ -46,6 +46,11 @@
         <button class="command-remvove-editable">권한 뺏기</button> 
         
         <script>
+
+        function post_message(message, data = null)
+        {
+            window.postMessage({msg:message, data:data}, location.origin);
+        }   
             const name_card = document.querySelector('name-card');
             const user_data = {};
             user_data.name = 'no Name';
@@ -67,13 +72,13 @@
                         if (node.className.match(/ommand-set-editable/))
                         {
                             const name_card = document.querySelector('name-card');
-                            name_card.setAttribute('editable', 'editable');
+                            post_message("status_login", null);
                             return;
                         }
                         if (node.className.match(/command-remvove-editable/))
                         {
                             const name_card = document.querySelector('name-card');
-                            name_card.setAttribute('editable', 'nonEditable');
+                            post_message("status_logout", null);
                             return;
                         }
                     });
@@ -99,6 +104,7 @@
                     {
                         const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
                         node.closest('section').style.color = randomColor;
+                        
                     }
                     if (node.className.match(/command-delete-card/))
                     {
@@ -109,18 +115,19 @@
             }
             onMessage(event){
                 const window_url = `https://${window.location.hostname}`;
-                if(event.origin !== window_url) return;
+                //if(event.origin !== window_url) return;
                 if(event.data?.msg) 
                 {
                     //로그인 되었다면 color버튼을 활성화 한다.
-                    if(event.data.msg === `message_status_user_login`) 
+                    if(event.data.msg === `status_login`) 
                     {
-                        this.shadowRoot.querySelector('div.settings').style.display = 'flex';
-                        console.log("component recevie login status..")
+                        this.setAttribute('editable', 'editable');
+                        console.log("component recevie log in status..")
                     }
-                    if(event.data.msg === `message_status_user_logout`) 
+                    if(event.data.msg === `status_logout`) 
                     {
-                        this.shadowRoot.querySelector('div.settings').style.display = 'none';
+                        this.setAttribute('editable', 'nonEditable');
+                        console.log("component recevie log out status..")
                     }
                     if(event.data.msg === `${this.message_prefix}_show_user_name_card`) 
                     {
@@ -141,10 +148,8 @@
             attributeChangedCallback(name, oldValue, newValue) {
                 console.log('Custom square element attributes changed.');
                 console.log(`${name}, ${oldValue}, ${newValue},`);
-                if(name === 'editable' && this.shadowRoot)
-                {
-                    this._setSettingVisible(newValue);
-                }
+                this.editable = newValue;
+                this._render(this.user_data);                
             }
 
             getComponentProp(data_set_value)
@@ -165,7 +170,7 @@
                     const temp_user_data = JSON.parse(this.getAttribute('user_data'));
                     user_data = {...temp_user_data};
                 }
-                const shadowRoot = this.attachShadow({mode: 'open'});
+                this.innerHTML = '';
                 const template = document.querySelector('#name_card');
                 const user_image = document.createElement('img');
                 user_image.setAttribute('slot', 'user_image');
@@ -178,10 +183,20 @@
                 <span slot="phone">${user_data?.phone}</span>
                 <span slot="role">${user_data?.role}</span>
                 <p slot="company_name">${user_data?.company_name}</p>
-                <div slot="setting" class="settings"></div>
                 `;//이렇게 직접 텍스트로 삽입도 가능
-                shadowRoot.appendChild(template.content.cloneNode(true));
+
+                if(this.shadowRoot) 
+                {
+                    this.shadowRoot.textContent = '';
+                    this.shadowRoot.appendChild(template.content.cloneNode(true));
+                }
+                else
+                {
+                    const shadowRoot = this.attachShadow({mode: 'open'});
+                    shadowRoot.appendChild(template.content.cloneNode(true));
+                }
                 this._setSettingVisible(this.editable);
+                
             }
 
             _setSettingVisible(visible)
