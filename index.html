@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <style>
+            body{margin:0;}
+        </style>
+    </head>
+    <body>
+        <nav-bar>
+            <firebase-login></firebase-login>
+        </nav-bar>
+        
+        <name-card-list></name-card-list>
+
+        
+
+<template id="nav_bar">
+    <style>
+        nav{
+            background-color: green;
+            color:white;
+            display: flex;
+            justify-content: space-between;
+            padding:12px;
+            font-size:18px;
+        }
+    </style>
+
+    <nav>
+        <span>Name Card</span>
+        <button class="command-open-login-form"> Login </button>
+    </nav>
+</template> 
+    
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth__ko.js"></script>
+<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth.css" />
+
+<script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
+<script src='/js/nav-bar.js?t1{@SKIN_UPDATE_DATE}'></script><!--nav bar -->
+<script src='/js/firebase-login.js?t1{@SKIN_UPDATE_DATE}'></script><!--FireBase -->
+
+
+<script>
+function post_message(message, data = null)
+{
+    window.postMessage({msg:message, data:data}, location.origin);
+}   
+
+window.addEventListener("message", (event)=>
+{
+    const window_url = `https://${window.location.hostname}`;
+    //if(event.origin !== window_url) return;
+    if(event.data?.msg) 
+    {
+        if(event.data.msg === `open_login_form`) 
+        {
+            console.log("open_login_form")
+        }
+    }
+}, false);
+</script>    
+    </body>
+</html>
