@@ -12,4 +12,8 @@ class ComponentABS extends HTMLElement{
     static get observedAttributes() {return ['lang']; }
     
     receiveMessage = this.onMessage.bind(this);
+    post_message(message, data = null)
+    {
+        window.postMessage({msg:message, data:data}, location.origin);
+    }   
 }

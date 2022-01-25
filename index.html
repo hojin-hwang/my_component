@@ -5,9 +5,8 @@
         </style>
     </head>
     <body>
-        <nav-bar>
-            <firebase-login></firebase-login>
-        </nav-bar>
+        <nav-bar></nav-bar>
+        <firebase-login></firebase-login>
         
         <name-card-list></name-card-list>
 
@@ -27,11 +26,62 @@
 
     <nav>
         <span>Name Card</span>
-        <button class="command-open-login-form"> Login </button>
+        <button class="login-btn command-open-login-form"> Login </button>
     </nav>
 </template> 
-    
 
+<template id="name_card_list">
+    <style>
+        section.name-card-list{ 
+            margin-bottom:20px;
+            padding : 12px;
+        }
+      
+    </style>    
+    <section class="name-card-list">
+
+    </section>
+</template>
+
+
+<template id="name_card">
+    <style>
+        slot[name=company_name]{font-weight:bold; font-size:18px;}
+        section{ margin-bottom:20px;}
+        .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
+        .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
+        .profile_user-info{display: flex; flex-direction: column; align-items:flex-start; gap: 11px;}
+        .profile-add{display: flex; flex-direction: column; align-items: flex-start; gap:10px; min-height: 80px;  border: 1px solid #8d8d8d; border-radius: 15px; padding:20px; margin:20px; }
+        .settings{display: flex; justify-content: space-between;width: 100%;}
+    </style>    
+    <section class="name-card">
+        <article class="profile">
+            <slot name="user_image"></slot>
+            <div class="profile_user-info">
+                <div class="test" style="font-size: 40px;">
+                    <slot name="name"></slot>
+                </div>
+                <slot name="email"></slot>
+            </div>
+        </article>
+        <article class="profile-add">
+            <slot name="company_name"></slot>
+            <slot name="phone"></slot>
+            <slot name="role"></slot>
+            <div class="settings">
+                <button type="button" class="command-modify-card">Change Card</button>
+                <button type="button" class="command-delete-card">Delete</button>
+            </div>                     
+        </article>
+    </section>
+</template>
+
+<script>
+function post_message(message, data = null)
+{
+    window.postMessage({msg:message, data:data}, location.origin);
+}   
+</script>    
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth__ko.js"></script>
@@ -40,13 +90,10 @@
 <script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
 <script src='/js/nav-bar.js?t1{@SKIN_UPDATE_DATE}'></script><!--nav bar -->
 <script src='/js/firebase-login.js?t1{@SKIN_UPDATE_DATE}'></script><!--FireBase -->
-
+<script src='/js/name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
+<script src='/js/name-card-list.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card List-->
 
 <script>
-function post_message(message, data = null)
-{
-    window.postMessage({msg:message, data:data}, location.origin);
-}   
 
 window.addEventListener("message", (event)=>
 {
@@ -56,10 +103,29 @@ window.addEventListener("message", (event)=>
     {
         if(event.data.msg === `open_login_form`) 
         {
+            document.querySelector('#firebaseui-auth-container').style.display = 'block';
+        }
+        if(event.data.msg === `open_login_form`) 
+        {
             console.log("open_login_form")
         }
     }
 }, false);
+
+document.addEventListener('DOMContentLoaded', () => 
+{
+    post_message('is_login',null);
+    document.addEventListener('click', (e) => 
+    {
+        e.composedPath().find((node) => 
+        {
+            if (!node.className || !node.className.match(/command/)) return false;
+
+            
+        });
+    });
+});
+
 </script>    
     </body>
 </html>

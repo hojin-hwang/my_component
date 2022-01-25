@@ -12,35 +12,38 @@ class NavBar extends ComponentABS{
             if (!node.className || !node.className.match(/command/)) return false;
             if (node.className.match(/command-open-login-form/))
             {
-                post_message("open_login_form", null);
+                this.post_message("open_login_form", null);
             }
             if (node.className.match(/command-logout/))
             {
-                //post_message("done_delete_name_card", null);
-                //this.remove();
+                this.post_message("do_logout", null);
             }
         });
     }
     onMessage(event){
         const window_url = `https://${window.location.hostname}`;
-        if(event.origin !== window_url) return;
+        //if(event.origin !== window_url) return;
         if(event.data?.msg) 
         {
-            //로그인 되었다면 color버튼을 활성화 한다.
-            if(event.data.msg === `message_status_user_login`) 
+            //로그인 되었다면 
+            if(event.data.msg === `status_login`) 
             {
-                this.shadowRoot.querySelector('div.settings').style.display = 'flex';
-                console.log("component recevie login status..")
+                this.shadowRoot.querySelector('.login-btn').classList.add('command-logout');
+                this.shadowRoot.querySelector('.login-btn').classList.remove('command-open-login-form');
+                this.shadowRoot.querySelector('.login-btn').innerHTML = 'Log Out';
+                console.log("component recevie log in status..");
             }
-            if(event.data.msg === `message_status_user_logout`) 
+            //로그아웃 되었다면 
+            if(event.data.msg === `status_logout`) 
             {
-                this.shadowRoot.querySelector('div.settings').style.display = 'none';
+                this.shadowRoot.querySelector('.login-btn').classList.remove('command-logout');
+                this.shadowRoot.querySelector('.login-btn').classList.add('command-open-login-form');
+                this.shadowRoot.querySelector('.login-btn').innerHTML = 'Login';
+                console.log("component recevie log out status..");
+
             }
-            if(event.data.msg === `${this.message_prefix}_show_user_name_card`) 
-            {
-                this._render(event.data.data);
-                
-            }
+
+  
         }
     }
 
