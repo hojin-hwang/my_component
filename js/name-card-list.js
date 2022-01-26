@@ -2,8 +2,8 @@ class NameCardList extends ComponentABS{
     constructor()
     {
         super();
-        this.web_sql_db  = openDatabase('MyComponentDatabase', '1.0', 'component web test', 2 * 1024 * 1024);
-        this._get_list().then((card_list) => {
+        WebSql.connectDB();
+        WebSql.getList().then((card_list) => {
             post_message(`${this.message_prefix}_show_name_card`, card_list); 
         });
     }
@@ -81,7 +81,6 @@ class NameCardList extends ComponentABS{
         try
         {
             list.forEach(element => {
-                
                 const name_card = new NameCard(element);                
                 shadowRoot.querySelector('.name-card-list').appendChild(name_card);
             });
@@ -90,30 +89,6 @@ class NameCardList extends ComponentABS{
         {
             console.log(e);
         }
-    }
-
-    _get_list()
-    {
-        return new Promise((resolve, reject) => {
-            this.web_sql_db.transaction(tx => {
-                tx.executeSql('SELECT rowid, * FROM NAMECARDS ORDER BY ROWID DESC', null, (tx, result) => {
-                    //post_message(`${this.message_prefix}_show_name_card`, result.rows); 
-                    const card_list = [];
-                    console.log(result.rows);
-                    for(const data of result.rows)
-                    {
-                        console.log(data);
-                        card_list.push(data);
-                    }
-                    resolve(card_list)
-                }, (tx, result) => {
-                    reject(tx, result)
-                })
-            })
-        })
-
-
-        return false;
     }
 
     _prepend_card(card_data)

@@ -5,7 +5,6 @@ class NameCard extends ComponentABS{
         this.user_data = user_data;
         this.editable = (this.getAttribute('editable') === 'editable');
         this.editting = this.getAttribute('editting');
-        this.web_sql_db  = openDatabase('MyComponentDatabase', '1.0', 'component web test', 2 * 1024 * 1024);
     }
     static get observedAttributes() {return ['editable','editting']; }
 
@@ -15,7 +14,6 @@ class NameCard extends ComponentABS{
             if (!node.className || !node.className.match(/command/)) return false;
             if (node.className.match(/command-modify-card/))
             {
-                console.log(node.closest('section'))
                 const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
                 node.closest('section').style.color = randomColor;
                 this.setAttribute('editting', true);
