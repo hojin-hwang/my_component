@@ -3,8 +3,9 @@ class NavBar extends ComponentABS{
     {
         super();
         this.user_data = user_data;
+
     }
-    static get observedAttributes() {return ['attribute_name']; }
+    static get observedAttributes() {return ['is_login']; }
 
     handleClick(e) {
         e.composedPath().find((node) => 
@@ -18,6 +19,10 @@ class NavBar extends ComponentABS{
             {
                 this.post_message("do_logout", null);
             }
+            if (node.className.match(/command-show-empty-card/))
+            {
+                this.post_message("show_empty_name_card", null);
+            }
         });
     }
     onMessage(event){
@@ -28,22 +33,13 @@ class NavBar extends ComponentABS{
             //로그인 되었다면 
             if(event.data.msg === `status_login`) 
             {
-                this.shadowRoot.querySelector('.login-btn').classList.add('command-logout');
-                this.shadowRoot.querySelector('.login-btn').classList.remove('command-open-login-form');
-                this.shadowRoot.querySelector('.login-btn').innerHTML = 'Log Out';
-                console.log("component recevie log in status..");
+                this.setAttribute('is_login', true);
             }
             //로그아웃 되었다면 
             if(event.data.msg === `status_logout`) 
             {
-                this.shadowRoot.querySelector('.login-btn').classList.remove('command-logout');
-                this.shadowRoot.querySelector('.login-btn').classList.add('command-open-login-form');
-                this.shadowRoot.querySelector('.login-btn').innerHTML = 'Login';
-                console.log("component recevie log out status..");
-
+                this.setAttribute('is_login', false);
             }
-
-  
         }
     }
 
@@ -58,8 +54,10 @@ class NavBar extends ComponentABS{
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log('Custom square element attributes changed.');
+        console.log('nav-bar element attributes changed.');
         console.log(`${name}, ${oldValue}, ${newValue},`);
+        this.is_login = (newValue === 'true');
+        this._render(this.user_data);
     }
 
     getComponentProp(data_set_value)
@@ -75,11 +73,44 @@ class NavBar extends ComponentABS{
 
     _render(user_data = null)
     {
-        const shadowRoot = this.attachShadow({mode: 'open'});
         const template = document.querySelector('#nav_bar');
-        shadowRoot.appendChild(template.content.cloneNode(true));
-    
+        if(this.shadowRoot) 
+        {
+            this.shadowRoot.textContent = '';
+            this.shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+        else
+        {
+            const shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+        console.log(this.is_login);
+        if(this.is_login) this._set_logout_btn();
+        else this._set_login_btn()
+        
 
+    }
+
+    _set_login_btn()
+    {
+        this.shadowRoot.querySelector('.login-btn').classList.remove('command-logout');
+        this.shadowRoot.querySelector('.login-btn').classList.add('command-open-login-form');
+        this.shadowRoot.querySelector('.login-btn').innerHTML = 'Login';
+
+        this.shadowRoot.querySelector('.title-btn').classList.remove('command-show-empty-card');
+        this.shadowRoot.querySelector('.title-btn').innerHTML = 'Name Card';
+        
+    }
+
+    _set_logout_btn()
+    {
+        this.shadowRoot.querySelector('.login-btn').classList.add('command-logout');
+        this.shadowRoot.querySelector('.login-btn').classList.remove('command-open-login-form');
+        this.shadowRoot.querySelector('.login-btn').innerHTML = 'Log Out';
+
+        this.shadowRoot.querySelector('.title-btn').classList.add('command-show-empty-card');
+        this.shadowRoot.querySelector('.title-btn').innerHTML = 'Add New Card';
+        
     }
 
 }

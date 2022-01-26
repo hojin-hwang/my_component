@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>Name Card List</title>
         <style>
             body{margin: 0; font-size: 20px;}
         </style>
@@ -33,6 +34,8 @@
                 .settings{display: flex; justify-content: space-between;width: 100%;}
             </style>    
             <section class="name-card">
+                <form>
+                    <input type="hidden" name="id">
                 <article class="profile">
                     <slot name="user_image"></slot>
                     <div class="profile_user-info">
@@ -47,18 +50,19 @@
                     <slot name="phone"></slot>
                     <slot name="role"></slot>
                     <div class="settings">
-                        <button type="button" class="command-modify-card">Change Card</button>
+                        <button type="button" class="edit-btn command-modify-card">Change Card</button>
                         <button type="button" class="command-delete-card">Delete</button>
                     </div>                     
                 </article>
+                </form>
             </section>
         </template>
 
         <div>Test Section</div>
-        
+        <button class="command-set-editable">로그인</button>
 
         
-        <script src='/js/name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
+        
         <script>
             function post_message(message, data = null)
             {
@@ -75,8 +79,10 @@
 
                         if (node.className.match(/ommand-set-editable/))
                         {
-                            const name_card = document.querySelector('name-card');
-                            name_card.setAttribute('editable', 'editable');
+                            const card_list = document.querySelector('name-card-list');
+                            const cards = card_list.shadowRoot.querySelectorAll('name-card');
+                            cards.forEach(card=>card.setAttribute('editable', 'editable'));
+                            console.log(cards);
                             return;
                         }
                         if (node.className.match(/command-remvove-editable/))
@@ -90,99 +96,8 @@
             });
         </script>
 
-        <script>
-        class NameCardList extends ComponentABS{
-            constructor()
-            {
-                super();
-                this._get_list();
-            }
-            static get observedAttributes() {return ['something']; }
-
-            handleClick(e) {
-                e.composedPath().find((node) => 
-                {
-                    if (!node.className || !node.className.match(/command/)) return false;
-                    if (node.className.match(/command-modify-card/))
-                    {
-                        const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-                        node.closest('section').style.color = randomColor;
-                    }
-                    if (node.className.match(/command-delete-card/))
-                    {
-                        post_message("done_delete_name_card", this.user_data);
-                        this.remove();
-                    }
-                });
-            }
-            onMessage(event){
-                const window_url = `https://${window.location.hostname}`;
-                //if(event.origin !== window_url) return;
-                if(event.data?.msg) 
-                {
-                    //data = event.data.data;
-                    if(event.data.msg === `${this.message_prefix}_show_name_card`) 
-                    {
-                        this._render(event.data.data);
-                    }
-
-                }
-            }
-
-            connectedCallback() {
-                //this._render(this.user_data);
-            }
-                
-            disconnectedCallback(){
-                console.log("disconnectedCallback");
-                window.removeEventListener("message", this.receiveMessage);
-            }
-            
-            attributeChangedCallback(name, oldValue, newValue) {
-                console.log('Custom square element attributes changed.');
-                console.log(`${name}, ${oldValue}, ${newValue},`);
-            }
-
-            getComponentProp(data_set_value)
-            {
-                const component_prop = {};
-                
-                switch(data_set_value.exam_type)
-                {
-                    default : console.log(data_set_value);
-                }
-                return component_prop;
-            }
-
-            _render(list = null)
-            {
-                const shadowRoot = this.attachShadow({mode: 'open'});
-                const template = document.querySelector('#name_card_list');
-                shadowRoot.appendChild(template.content.cloneNode(true));
-
-                try
-                {
-                    list.forEach(element => {
-                        const name_card = new NameCard(element);                
-                        shadowRoot.querySelector('.name-card-list').appendChild(name_card);
-                    });
-                }
-                catch(e)
-                {
-                    console.log(e);
-                }
-            }
-
-            _get_list()
-            {
-                const card_list = [{name:"Tom Hank..", email:"Tom@naver.com", company_name:"Face Look Company.", profile_img:"https://studygym.master.to/upload/1584006494_login-top.jpg",phone:"+82-1111-5458",role:"Web Producer" }, {name:"John F kene..", email:"Smith@samsmith.com", company_name:"ABCD Company.", profile_img:"https://studygym.master.to/upload/1588814266_06.jpg",phone:"+82-2124-5458",role:"Web Designer" }]
-                post_message(`${this.message_prefix}_show_name_card`, card_list);
-                return false;
-            }
-        }
-        customElements.define('name-card-list', NameCardList);
-
-        </script>
+<script src='/js/name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card-->
+<script src='/js/name-card-list.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card List -->
 
         
     </body>

@@ -1,0 +1,204 @@
+<html>
+    <head>
+        <title>Empty Name Card</title>
+        <style>
+            body{margin: 0; font-size: 20px;}
+        </style>
+        <script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
+    </head>
+    <body>
+        <empty-name-card></empty-name-card>
+        
+        <template id="empty_name_card">
+            <style>
+                section{ margin-bottom:20px;}
+                .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
+                .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
+                .profile_user-info{display: flex; flex-direction: column; align-items:flex-start; gap: 11px;}
+                .profile-add{display: flex; flex-direction: column; align-items: flex-start; gap:10px; min-height: 80px;  border: 1px solid #8d8d8d; border-radius: 15px; padding:20px; margin:20px; }
+                .settings{display: flex; justify-content: space-between;width: 100%;}
+            </style>    
+            <section class="name-card">
+                <form>
+                <input name="profile_img" type="hidden">
+                <article class="profile">
+                    <div class="profile_user-info">
+                        <div class="test" style="font-size: 40px;">
+                            <input name="name" placeholder="Name"/>
+                        </div>
+                        <input name="email" placeholder="email@email.com">
+                    </div>
+                </article>
+                <article class="profile-add">
+                    <input name="company_name" placeholder="company name">
+                    <input name="phone" placeholder="hand phone">
+                    <input name="role" placeholder="your Role">
+                    <div class="settings">
+                        <button type="button" class="edit-btn command-hide-card">Cancel</button>
+                        <button type="button" class="edit-btn command-add-card">OK</button>
+                    </div>                     
+                </article>
+                </form>
+            </section>
+        </template>
+
+
+        <div>Test Seciton</div>
+        <button class="command-show-empty-card">show Card</button>
+        <script>
+
+        function post_message(message, data = null)
+        {
+            window.postMessage({msg:message, data:data}, location.origin);
+        }   
+            
+            document.addEventListener('DOMContentLoaded', () => 
+            {
+
+                document.addEventListener('click', (e) => 
+                {
+                    e.composedPath().find((node) => 
+                    {
+                        if (!node.className || !node.className.match(/command/)) return false;
+
+                        if (node.className.match(/command-show-empty-card/))
+                        {
+                            const empty_card = document.querySelector('empty-name-card');
+                            empty_card.style.display = 'block';
+                            return;
+                        }
+                        if (node.className.match(/command-remvove-editable/))
+                        {
+                            return;
+                        }
+                    });
+                });
+            });
+        </script>
+
+<script>
+class EmptyNameCard extends ComponentABS{
+    constructor(user_data = null)
+    {
+        super();
+        this._init_web_sql();
+        
+    }
+    static get observedAttributes() {return ['something_attribute']; }
+
+    handleClick(e) {
+        e.composedPath().find((node) => 
+        {
+            if (!node.className || !node.className.match(/command/)) return false;
+            if (node.className.match(/command-add-card/))
+            {
+                const form = node.closest('form');
+                this._add_name_card(form).then((new_data) => {
+                    this.post_message('done_add_name_card', new_data);
+                });
+            }
+            if (node.className.match(/command-hide-card/))
+            {
+                this.style.display = 'none';
+            }
+            
+        });
+    }
+    onMessage(event){
+        const window_url = `https://${window.location.hostname}`;
+        //if(event.origin !== window_url) return;
+        if(event.data?.msg) 
+        {
+            if(event.data.msg === `show_empty_name_card`) 
+            {
+                this.style.display = 'block';
+            }
+        }
+    }
+
+    connectedCallback() {
+        this._render(this.user_data);
+    }
+        
+    disconnectedCallback(){
+        console.log("disconnectedCallback");
+        window.removeEventListener("message", this.receiveMessage);
+    }
+    
+    attributeChangedCallback(name, oldValue, newValue) {
+        console.log('Name Card element attributes changed.');
+        console.log(`${name}, ${oldValue}, ${newValue},`);
+              
+    }
+
+    getComponentProp(data_set_value)
+    {
+        const component_prop = {};
+        
+        switch(data_set_value.exam_type)
+        {
+            default : console.log(data_set_value);
+        }
+        return component_prop;
+    }
+
+    _render()
+    {
+        const template = document.querySelector('#empty_name_card');
+        if(this.shadowRoot) 
+        {
+            this.shadowRoot.textContent = '';
+            this.shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+        else
+        {
+            const shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.appendChild(template.content.cloneNode(true));
+        }  
+        this.style.display = 'none';
+    }
+
+    _add_name_card(form)
+    {
+        const formData = new FormData(form);
+        const new_data = {};
+        new_data.name = form.name?.value;
+        new_data.company_name = form.company_name?.value;
+        new_data.profile_img = form.profile_img?.value;
+        new_data.phone = form.phone?.value;
+        new_data.email = form.email?.value;
+        new_data.role = form.role?.value;
+
+        const web_sql_db = this.web_sql_db;
+        return new Promise((resolve, reject) => {
+            web_sql_db.transaction(tx => {
+                    tx.executeSql('INSERT INTO NAMECARDS(NAME,EMAIL,COMPANY_NAME, PROFILE_IMG, PHONE, ROLE) VALUES(?, ?,?,?,?,?)',
+                     [form.name?.value, form.email?.value, form.company_name?.value, form.profile_img?.value ,form.phone?.value,form.role?.value], (tx, result) => {
+                        console.log(tx, result)
+                    }, (tx, result) => {
+                        console.error(tx, result)
+                    })
+            }, [], () => {
+                resolve(new_data)
+            }, () => {
+                reject()
+            })
+        });
+    }
+
+    //이 예제는 web sql을 사용. 
+    _init_web_sql()
+    {
+        this.web_sql_db  = openDatabase('MyComponentDatabase', '1.0', 'component web test', 2 * 1024 * 1024);
+        this.web_sql_db.transaction(function (tx) {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS NAMECARDS (NAME,EMAIL,COMPANY_NAME, PROFILE_IMG, PHONE, ROLE)');
+        })
+    }
+}
+customElements.define('empty-name-card', EmptyNameCard);
+
+        </script>
+
+        
+    </body>
+</html>

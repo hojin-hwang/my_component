@@ -2,7 +2,10 @@ class NameCardList extends ComponentABS{
     constructor()
     {
         super();
-        this._get_list();
+        this.web_sql_db  = openDatabase('MyComponentDatabase', '1.0', 'component web test', 2 * 1024 * 1024);
+        this._get_list().then((card_list) => {
+            post_message(`${this.message_prefix}_show_name_card`, card_list); 
+        });
     }
     static get observedAttributes() {return ['something']; }
 
@@ -10,7 +13,12 @@ class NameCardList extends ComponentABS{
         e.composedPath().find((node) => 
         {
             if (!node.className || !node.className.match(/command/)) return false;
-   
+            if (node.className.match(/command-modify-card/))
+            {
+                const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+                node.closest('section').style.color = randomColor;
+            }
+            
         });
     }
     onMessage(event){
@@ -18,10 +26,22 @@ class NameCardList extends ComponentABS{
         //if(event.origin !== window_url) return;
         if(event.data?.msg) 
         {
-            //data = event.data.data;
+            if(event.data.msg === `status_login`) 
+            {
+                this._setAttributeNameCard('editable', 'editable');
+            }
+            if(event.data.msg === `status_logout`) 
+            {
+                this._setAttributeNameCard('editable', 'nonEditable');
+            }
             if(event.data.msg === `${this.message_prefix}_show_name_card`) 
             {
                 this._render(event.data.data);
+            }
+            if(event.data.msg === `done_add_name_card`) 
+            {
+                console.log(event.data.data);
+                this._prepend_card(event.data.data);
             }
 
         }
@@ -61,8 +81,8 @@ class NameCardList extends ComponentABS{
         try
         {
             list.forEach(element => {
-                const name_card = new NameCard(element);  
-                name_card.setAttribute('editable', 'editable');              
+                
+                const name_card = new NameCard(element);                
                 shadowRoot.querySelector('.name-card-list').appendChild(name_card);
             });
         }
@@ -74,10 +94,39 @@ class NameCardList extends ComponentABS{
 
     _get_list()
     {
-        const card_list = [{name:"Tom Hank..", email:"Tom@naver.com", company_name:"Face Look Company.", profile_img:"https://studygym.master.to/upload/1584006494_login-top.jpg",phone:"+82-1111-5458",role:"Web Producer" }, {name:"John F kene..", email:"Smith@samsmith.com", company_name:"ABCD Company.", profile_img:"https://studygym.master.to/upload/1588814266_06.jpg",phone:"+82-2124-5458",role:"Web Designer" }]
-        this.post_message(`${this.message_prefix}_show_name_card`, card_list);
-        
+        return new Promise((resolve, reject) => {
+            this.web_sql_db.transaction(tx => {
+                tx.executeSql('SELECT rowid, * FROM NAMECARDS ORDER BY ROWID DESC', null, (tx, result) => {
+                    //post_message(`${this.message_prefix}_show_name_card`, result.rows); 
+                    const card_list = [];
+                    console.log(result.rows);
+                    for(const data of result.rows)
+                    {
+                        console.log(data);
+                        card_list.push(data);
+                    }
+                    resolve(card_list)
+                }, (tx, result) => {
+                    reject(tx, result)
+                })
+            })
+        })
+
+
         return false;
+    }
+
+    _prepend_card(card_data)
+    {
+        const name_card = new NameCard(card_data);   
+        name_card.setAttribute('editable', 'editable');           
+        this.shadowRoot.querySelector('.name-card-list').prepend(name_card);
+    }
+
+    _setAttributeNameCard(name, value)
+    {
+        const cards = this.shadowRoot?.querySelectorAll('name-card');
+        cards?.forEach(card=>card.setAttribute(name, value));
     }
 }
 customElements.define('name-card-list', NameCardList);

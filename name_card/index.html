@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>Name Card</title>
         <style>
             body{margin: 0; font-size: 20px;}
         </style>
@@ -10,15 +11,18 @@
         
         <template id="name_card">
             <style>
-                slot[name=company_name]{font-weight:bold; font-size:18px;}
+                slot[name=company_name]{font-weight:bold; font-size:18px; }
                 section{ margin-bottom:20px;}
                 .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
                 .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
                 .profile_user-info{display: flex; flex-direction: column; align-items:flex-start; gap: 11px;}
                 .profile-add{display: flex; flex-direction: column; align-items: flex-start; gap:10px; min-height: 80px;  border: 1px solid #8d8d8d; border-radius: 15px; padding:20px; margin:20px; }
                 .settings{display: flex; justify-content: space-between;width: 100%;}
+                ::slotted(*[contenteditable="true"]) {border-bottom: 2px solid red;}
             </style>    
             <section class="name-card">
+                <form>
+                <input name="id" type="hidden">
                 <article class="profile">
                     <slot name="user_image"></slot>
                     <div class="profile_user-info">
@@ -33,10 +37,11 @@
                     <slot name="phone"></slot>
                     <slot name="role"></slot>
                     <div class="settings">
-                        <button type="button" class="command-modify-card">Change Card</button>
+                        <button type="button" class="edit-btn command-modify-card">Change Card</button>
                         <button type="button" class="command-delete-card">Delete</button>
                     </div>                     
                 </article>
+                </form>
             </section>
         </template>
 
@@ -69,148 +74,25 @@
                     {
                         if (!node.className || !node.className.match(/command/)) return false;
 
-                        if (node.className.match(/ommand-set-editable/))
+                        if (node.className.match(/command-set-editable/))
                         {
                             const name_card = document.querySelector('name-card');
-                            post_message("status_login", null);
+                            //post_message("status_login", null);
+                            name_card.setAttribute('editable', 'editable');
                             return;
                         }
                         if (node.className.match(/command-remvove-editable/))
                         {
                             const name_card = document.querySelector('name-card');
-                            post_message("status_logout", null);
+                            name_card.setAttribute('editable', 'nonEditable');
+                            //post_message("status_logout", null);
                             return;
                         }
                     });
                 });
             });
         </script>
-
-        <script>
-        class NameCard extends ComponentABS{
-            constructor(user_data = null)
-            {
-                super();
-                this.user_data = user_data;
-                this.editable = this.getAttribute('editable');
-            }
-            static get observedAttributes() {return ['editable']; }
-
-            handleClick(e) {
-                e.composedPath().find((node) => 
-                {
-                    if (!node.className || !node.className.match(/command/)) return false;
-                    if (node.className.match(/command-modify-card/))
-                    {
-                        const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-                        node.closest('section').style.color = randomColor;
-                        
-                    }
-                    if (node.className.match(/command-delete-card/))
-                    {
-                        post_message("done_delete_name_card", this.user_data);
-                        this.remove();
-                    }
-                });
-            }
-            onMessage(event){
-                const window_url = `https://${window.location.hostname}`;
-                //if(event.origin !== window_url) return;
-                if(event.data?.msg) 
-                {
-                    //로그인 되었다면 color버튼을 활성화 한다.
-                    if(event.data.msg === `status_login`) 
-                    {
-                        this.setAttribute('editable', 'editable');
-                        console.log("component recevie log in status..")
-                    }
-                    if(event.data.msg === `status_logout`) 
-                    {
-                        this.setAttribute('editable', 'nonEditable');
-                        console.log("component recevie log out status..")
-                    }
-                    if(event.data.msg === `${this.message_prefix}_show_user_name_card`) 
-                    {
-                        this._render(event.data.data);
-                    }
-                }
-            }
-
-            connectedCallback() {
-                this._render(this.user_data);
-            }
-                
-            disconnectedCallback(){
-                console.log("disconnectedCallback");
-                window.removeEventListener("message", this.receiveMessage);
-            }
-            
-            attributeChangedCallback(name, oldValue, newValue) {
-                console.log('Custom square element attributes changed.');
-                console.log(`${name}, ${oldValue}, ${newValue},`);
-                this.editable = newValue;
-                this._render(this.user_data);                
-            }
-
-            getComponentProp(data_set_value)
-            {
-                const component_prop = {};
-                
-                switch(data_set_value.exam_type)
-                {
-                    default : console.log(data_set_value);
-                }
-                return component_prop;
-            }
-
-            _render(user_data = null)
-            {
-                if(!user_data) //for Test
-                {
-                    const temp_user_data = JSON.parse(this.getAttribute('user_data'));
-                    user_data = {...temp_user_data};
-                }
-                this.innerHTML = '';
-                const template = document.querySelector('#name_card');
-                const user_image = document.createElement('img');
-                user_image.setAttribute('slot', 'user_image');
-                user_image.src = user_data?.profile_img;
-                user_image.style = 'width:60px; height:60px; border-radius: 50%;';
-                this.appendChild(user_image); //${user_image.outerHTML} 이렇게 엘리먼트를 만들어도 되고
-                this.innerHTML += ` 
-                <span slot="name">${user_data?.name}</span>
-                <span slot="email">${user_data?.email}</span>
-                <span slot="phone">${user_data?.phone}</span>
-                <span slot="role">${user_data?.role}</span>
-                <p slot="company_name">${user_data?.company_name}</p>
-                `;//이렇게 직접 텍스트로 삽입도 가능
-
-                if(this.shadowRoot) 
-                {
-                    this.shadowRoot.textContent = '';
-                    this.shadowRoot.appendChild(template.content.cloneNode(true));
-                }
-                else
-                {
-                    const shadowRoot = this.attachShadow({mode: 'open'});
-                    shadowRoot.appendChild(template.content.cloneNode(true));
-                }
-                this._setSettingVisible(this.editable);
-                
-            }
-
-            _setSettingVisible(visible)
-            {
-                const settings_ele  = this.shadowRoot.querySelector('.settings');
-                if(visible === 'editable') settings_ele.style.display = 'flex';
-                else settings_ele.style.display = 'none';
-            }
-
-        }
-        customElements.define('name-card', NameCard);
-
-        </script>
-
+<script src='/js/name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
         
     </body>
 </html>

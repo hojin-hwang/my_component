@@ -1,13 +1,17 @@
 <html>
     <head>
+        <title>Web Component Sample</title>
         <style>
             body{margin:0;}
         </style>
     </head>
     <body>
         <nav-bar></nav-bar>
+        
         <firebase-login></firebase-login>
         
+        <empty-name-card></empty-name-card>
+
         <name-card-list></name-card-list>
 
         
@@ -22,13 +26,56 @@
             padding:12px;
             font-size:18px;
         }
+        button.title-btn
+        {
+            background-color: green;
+            color : white;
+            font-size:18px;
+            border:none;
+        }
+        button.command-show-empty-card{
+            cursor: pointer;
+        }
     </style>
 
     <nav>
-        <span>Name Card</span>
+        <button class="title-btn">Name Card</span>
         <button class="login-btn command-open-login-form"> Login </button>
     </nav>
-</template> 
+</template>
+
+<template id="empty_name_card">
+    <style>
+        section{ margin-bottom:20px;}
+        .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
+        .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
+        .profile_user-info{display: flex; flex-direction: column; align-items:flex-start; gap: 11px;}
+        .profile-add{display: flex; flex-direction: column; align-items: flex-start; gap:10px; min-height: 80px;  border: 1px solid #8d8d8d; border-radius: 15px; padding:20px; margin:20px; }
+        .settings{display: flex; justify-content: space-between;width: 100%;}
+    </style>    
+    <section class="name-card">
+        <form>
+        <input name="profile_img" type="hidden">
+        <article class="profile">
+            <div class="profile_user-info">
+                <div class="test" style="font-size: 40px;">
+                    <input name="name" placeholder="Name"/>
+                </div>
+                <input name="email" placeholder="email@email.com">
+            </div>
+        </article>
+        <article class="profile-add">
+            <input name="company_name" placeholder="company name">
+            <input name="phone" placeholder="hand phone">
+            <input name="role" placeholder="your Role">
+            <div class="settings">
+                <button type="button" class="edit-btn command-hide-card">Cancel</button>
+                <button type="button" class="edit-btn command-add-card">OK</button>
+            </div>                     
+        </article>
+        </form>
+    </section>
+</template>
 
 <template id="name_card_list">
     <style>
@@ -46,15 +93,18 @@
 
 <template id="name_card">
     <style>
-        slot[name=company_name]{font-weight:bold; font-size:18px;}
+        slot[name=company_name]{font-weight:bold; font-size:18px; }
         section{ margin-bottom:20px;}
         .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
         .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
         .profile_user-info{display: flex; flex-direction: column; align-items:flex-start; gap: 11px;}
         .profile-add{display: flex; flex-direction: column; align-items: flex-start; gap:10px; min-height: 80px;  border: 1px solid #8d8d8d; border-radius: 15px; padding:20px; margin:20px; }
         .settings{display: flex; justify-content: space-between;width: 100%;}
+        ::slotted(*[contenteditable="true"]) {border-bottom: 2px solid red;}
     </style>    
     <section class="name-card">
+        <form>
+            <input type="hidden" name="id">
         <article class="profile">
             <slot name="user_image"></slot>
             <div class="profile_user-info">
@@ -69,10 +119,11 @@
             <slot name="phone"></slot>
             <slot name="role"></slot>
             <div class="settings">
-                <button type="button" class="command-modify-card">Change Card</button>
+                <button type="button " class="edit-btn command-modify-card">Change Card</button>
                 <button type="button" class="command-delete-card">Delete</button>
             </div>                     
         </article>
+        </form>
     </section>
 </template>
 
@@ -88,7 +139,10 @@ function post_message(message, data = null)
 <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth.css" />
 
 <script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
+<script src='/js/web-sql.js?t1{@SKIN_UPDATE_DATE}'></script><!--Web SQL-->
+
 <script src='/js/nav-bar.js?t1{@SKIN_UPDATE_DATE}'></script><!--nav bar -->
+<script src='/js/empty-name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
 <script src='/js/firebase-login.js?t1{@SKIN_UPDATE_DATE}'></script><!--FireBase -->
 <script src='/js/name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
 <script src='/js/name-card-list.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card List-->
@@ -114,6 +168,7 @@ window.addEventListener("message", (event)=>
 
 document.addEventListener('DOMContentLoaded', () => 
 {
+    WebSql.connectDB(); // Web SQL Connection...
     post_message('is_login',null);
     document.addEventListener('click', (e) => 
     {
