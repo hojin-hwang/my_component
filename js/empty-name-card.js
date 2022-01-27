@@ -12,10 +12,7 @@ class EmptyNameCard extends ComponentABS{
             if (node.className.match(/command-add-card/))
             {
                 const form = node.closest('form');
-                WebSql.insertCard(form).then((new_data) => {
-                    this.post_message('done_add_name_card', new_data);
-                    this._render();
-                });
+                this._insertCard(form);
             }
             if (node.className.match(/command-hide-card/))
             {
@@ -65,7 +62,7 @@ class EmptyNameCard extends ComponentABS{
     _render()
     {
         const template = document.querySelector('#empty_name_card');
-        if(this.shadowRoot) 
+        if(this?.shadowRoot) 
         {
             this.shadowRoot.textContent = '';
             this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -83,7 +80,6 @@ class EmptyNameCard extends ComponentABS{
     {
         const user_photo = this.shadowRoot.querySelector('img');
         const form = this.shadowRoot.querySelector('form');
-        console.log(user_photo)
         fetch('https://api.unsplash.com/photos/random/?client_id=sQcdcKSAqNRenWqexeWHoc_taSPOfTmwM1i_sQfval4&count=30')
         .then(function(response) {
             return response.json();
@@ -94,5 +90,12 @@ class EmptyNameCard extends ComponentABS{
         });
     }
 
+    _insertCard(form)
+    {
+        WebSql.insertCard(form).then((new_data) => {
+            this.post_message('done_add_name_card', new_data);
+            this._render();
+        });
+    }
 }
 customElements.define('empty-name-card', EmptyNameCard);

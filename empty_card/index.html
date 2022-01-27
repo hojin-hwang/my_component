@@ -4,7 +4,6 @@
         <style>
             body{margin: 0; font-size: 20px;}
         </style>
-        <script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
     </head>
     <body>
         <empty-name-card></empty-name-card>
@@ -26,9 +25,9 @@
                     <img src="" name="ramdon_img">
                     <div class="profile_user-info">
                         <div class="test" style="font-size: 40px;">
-                            <input name="name" placeholder="Name"/>
+                            <input required name="name" placeholder="required Name"/>
                         </div>
-                        <input name="email" placeholder="email@email.com">
+                        <input required name="email" placeholder="required your@email">
                     </div>
                 </article>
                 <article class="profile-add">
@@ -56,7 +55,7 @@
             
             document.addEventListener('DOMContentLoaded', () => 
             {
-
+                WebSql.connectDB();
                 document.addEventListener('click', (e) => 
                 {
                     e.composedPath().find((node) => 
@@ -77,9 +76,8 @@
                 });
             });
         </script>
-
-<script src='/js/empty-name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
-
-        
+<script src='/js/component-abs.js?t1{@SKIN_UPDATE_DATE}'></script><!--Component ABS-->
+<script src='/js/ttb.form.lib.js?t1{@SKIN_UPDATE_DATE}'></script>
+<script src='/js/web-sql.js?t1{@SKIN_UPDATE_DATE}'></script>
     </body>
 </html>
