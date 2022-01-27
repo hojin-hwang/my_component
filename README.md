@@ -22,3 +22,7 @@
 + https://unsplash.com/ 가입후 
 + https://unsplash.com/developers -> Your Apps에서 Demo App추가
     + Access Key값을 구한다
+
+## Test
++ VS code -> Extension -> Live Server install
++ index.html -> 오른쪽 마우스 -> Open with Live Sever 
