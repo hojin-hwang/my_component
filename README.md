@@ -3,6 +3,7 @@
 + 로그인은 Firebase를 사용했습니다. 
     + firebase Config는 각자 작성하시기 바랍니다.
 + DB는 web sql을 사용했습니다.
+    + 따라서 크롬브라우저에서 사용하기를 추천합니다.
 + profile img는 랜덤이미지를 사용합니다.
     + file upload기능은 없습니다.
 
