@@ -60,18 +60,7 @@ class NavBar extends ComponentABS{
         this._render(this.user_data);
     }
 
-    getComponentProp(data_set_value)
-    {
-        const component_prop = {};
-        
-        switch(data_set_value.exam_type)
-        {
-            default : console.log(data_set_value);
-        }
-        return component_prop;
-    }
-
-    _render(user_data = null)
+    _render()
     {
         const template = document.querySelector('#nav_bar');
         if(this.shadowRoot) 
@@ -87,8 +76,6 @@ class NavBar extends ComponentABS{
         console.log(this.is_login);
         if(this.is_login) this._set_logout_btn();
         else this._set_login_btn()
-        
-
     }
 
     _set_login_btn()
@@ -99,7 +86,6 @@ class NavBar extends ComponentABS{
 
         this.shadowRoot.querySelector('.title-btn').classList.remove('command-show-empty-card');
         this.shadowRoot.querySelector('.title-btn').innerHTML = 'Name Card';
-        
     }
 
     _set_logout_btn()
@@ -110,7 +96,6 @@ class NavBar extends ComponentABS{
 
         this.shadowRoot.querySelector('.title-btn').classList.add('command-show-empty-card');
         this.shadowRoot.querySelector('.title-btn').innerHTML = 'Add New Card';
-        
     }
 
 }

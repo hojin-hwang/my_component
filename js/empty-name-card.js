@@ -1,8 +1,7 @@
 class EmptyNameCard extends ComponentABS{
     constructor(user_data = null)
     {
-        super();
-        //this._init_web_sql();        
+        super();   
     }
     static get observedAttributes() {return ['something_attribute']; }
 
@@ -15,7 +14,7 @@ class EmptyNameCard extends ComponentABS{
                 const form = node.closest('form');
                 WebSql.insertCard(form).then((new_data) => {
                     this.post_message('done_add_name_card', new_data);
-                    this.style.display = 'none';
+                    this._render();
                 });
             }
             if (node.className.match(/command-hide-card/))
@@ -77,6 +76,23 @@ class EmptyNameCard extends ComponentABS{
             shadowRoot.appendChild(template.content.cloneNode(true));
         }  
         this.style.display = 'none';
+        this._get_random_image();
     }
+
+    _get_random_image()
+    {
+        const user_photo = this.shadowRoot.querySelector('img');
+        const form = this.shadowRoot.querySelector('form');
+        console.log(user_photo)
+        fetch('https://api.unsplash.com/photos/random/?client_id=sQcdcKSAqNRenWqexeWHoc_taSPOfTmwM1i_sQfval4&count=30')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(myJson) {
+            user_photo.src = ((myJson[0].urls.thumb));
+            form.profile_img.value = user_photo.src;
+        });
+    }
+
 }
 customElements.define('empty-name-card', EmptyNameCard);

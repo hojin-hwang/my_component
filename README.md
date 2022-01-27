@@ -10,3 +10,11 @@
  - 로그인 되었는지 (post_message("status_login", null);)
  - 로그아웃 되었는지 post_message("status_logout", null);
  - 메세지로 각 컨포넌트에 전달합니다.
+
+## Web SQL사용 : 데이터 저장을 위해서 
++ web-sql.js는 데이블에 데이터 저장, 삭제, 수정
+
+## ramdom Image 사용
++ https://unsplash.com/ 가입후 
++ https://unsplash.com/developers -> Your Apps에서 Demo App추가
+++ Access Key값을 구한다.

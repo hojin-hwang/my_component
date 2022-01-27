@@ -11,6 +11,7 @@
         
         <template id="empty_name_card">
             <style>
+                img{width: 60px;    height: 60px;    border-radius: 50%;}
                 section{ margin-bottom:20px;}
                 .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
                 .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
@@ -20,8 +21,9 @@
             </style>    
             <section class="name-card">
                 <form>
-                <input name="profile_img" type="hidden">
+                    <input type="hidden" name="profile_img">
                 <article class="profile">
+                    <img src="" name="ramdon_img">
                     <div class="profile_user-info">
                         <div class="test" style="font-size: 40px;">
                             <input name="name" placeholder="Name"/>
@@ -76,128 +78,7 @@
             });
         </script>
 
-<script>
-class EmptyNameCard extends ComponentABS{
-    constructor(user_data = null)
-    {
-        super();
-        this._init_web_sql();
-        
-    }
-    static get observedAttributes() {return ['something_attribute']; }
-
-    handleClick(e) {
-        e.composedPath().find((node) => 
-        {
-            if (!node.className || !node.className.match(/command/)) return false;
-            if (node.className.match(/command-add-card/))
-            {
-                const form = node.closest('form');
-                this._add_name_card(form).then((new_data) => {
-                    this.post_message('done_add_name_card', new_data);
-                });
-            }
-            if (node.className.match(/command-hide-card/))
-            {
-                this.style.display = 'none';
-            }
-            
-        });
-    }
-    onMessage(event){
-        const window_url = `https://${window.location.hostname}`;
-        //if(event.origin !== window_url) return;
-        if(event.data?.msg) 
-        {
-            if(event.data.msg === `show_empty_name_card`) 
-            {
-                this.style.display = 'block';
-            }
-        }
-    }
-
-    connectedCallback() {
-        this._render(this.user_data);
-    }
-        
-    disconnectedCallback(){
-        console.log("disconnectedCallback");
-        window.removeEventListener("message", this.receiveMessage);
-    }
-    
-    attributeChangedCallback(name, oldValue, newValue) {
-        console.log('Name Card element attributes changed.');
-        console.log(`${name}, ${oldValue}, ${newValue},`);
-              
-    }
-
-    getComponentProp(data_set_value)
-    {
-        const component_prop = {};
-        
-        switch(data_set_value.exam_type)
-        {
-            default : console.log(data_set_value);
-        }
-        return component_prop;
-    }
-
-    _render()
-    {
-        const template = document.querySelector('#empty_name_card');
-        if(this.shadowRoot) 
-        {
-            this.shadowRoot.textContent = '';
-            this.shadowRoot.appendChild(template.content.cloneNode(true));
-        }
-        else
-        {
-            const shadowRoot = this.attachShadow({mode: 'open'});
-            shadowRoot.appendChild(template.content.cloneNode(true));
-        }  
-        this.style.display = 'none';
-    }
-
-    _add_name_card(form)
-    {
-        const formData = new FormData(form);
-        const new_data = {};
-        new_data.name = form.name?.value;
-        new_data.company_name = form.company_name?.value;
-        new_data.profile_img = form.profile_img?.value;
-        new_data.phone = form.phone?.value;
-        new_data.email = form.email?.value;
-        new_data.role = form.role?.value;
-
-        const web_sql_db = this.web_sql_db;
-        return new Promise((resolve, reject) => {
-            web_sql_db.transaction(tx => {
-                    tx.executeSql('INSERT INTO NAMECARDS(NAME,EMAIL,COMPANY_NAME, PROFILE_IMG, PHONE, ROLE) VALUES(?, ?,?,?,?,?)',
-                     [form.name?.value, form.email?.value, form.company_name?.value, form.profile_img?.value ,form.phone?.value,form.role?.value], (tx, result) => {
-                        console.log(tx, result)
-                    }, (tx, result) => {
-                        console.error(tx, result)
-                    })
-            }, [], () => {
-                resolve(new_data)
-            }, () => {
-                reject()
-            })
-        });
-    }
-
-    //이 예제는 web sql을 사용. 
-    _init_web_sql()
-    {
-        this.web_sql_db  = openDatabase('MyComponentDatabase', '1.0', 'component web test', 2 * 1024 * 1024);
-        this.web_sql_db.transaction(function (tx) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS NAMECARDS (NAME,EMAIL,COMPANY_NAME, PROFILE_IMG, PHONE, ROLE)');
-        })
-    }
-}
-customElements.define('empty-name-card', EmptyNameCard);
-
-        </script>
+<script src='/js/empty-name-card.js?t1{@SKIN_UPDATE_DATE}'></script><!--Name Card -->
 
         
     </body>

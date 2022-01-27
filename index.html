@@ -46,6 +46,7 @@
 
 <template id="empty_name_card">
     <style>
+        img{width: 60px;    height: 60px;    border-radius: 50%;}
         section{ margin-bottom:20px;}
         .name-card{display: flex; flex-direction: column; border: 1px solid #8d8d8d; border-radius: 15px; min-width:360px;}
         .profile{display: flex; gap:10px; align-items: center; padding: 20px;}
@@ -55,8 +56,9 @@
     </style>    
     <section class="name-card">
         <form>
-        <input name="profile_img" type="hidden">
+            <input type="hidden" name="profile_img">
         <article class="profile">
+            <img src="" name="ramdon_img">
             <div class="profile_user-info">
                 <div class="test" style="font-size: 40px;">
                     <input name="name" placeholder="Name"/>

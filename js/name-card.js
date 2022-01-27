@@ -21,17 +21,13 @@ class NameCard extends ComponentABS{
             }
             if (node.className.match(/command-do-modify/))
             {
+                this._modifyCard();
                 this.setAttribute('editting', false);
                 return;
             }
             if (node.className.match(/command-delete-card/))
             {
-                console.log(this.user_data)
-                WebSql.deleteCard(this.user_data.rowid).then(() => {
-                    this.post_message('done_delete_name_card', null);
-                    this.remove();
-                }); 
-                
+                this._deleteCard();
                 return;
             }
         });
@@ -73,17 +69,6 @@ class NameCard extends ComponentABS{
         }              
     }
 
-    getComponentProp(data_set_value)
-    {
-        const component_prop = {};
-        
-        switch(data_set_value.exam_type)
-        {
-            default : console.log(data_set_value);
-        }
-        return component_prop;
-    }
-
     _render(user_data = null)
     {
         if(!user_data) //for Test
@@ -106,7 +91,6 @@ class NameCard extends ComponentABS{
         <p slot="company_name" contenteditable="${this.editting}">${user_data?.company_name}</p>
         `;//이렇게 직접 텍스트로 삽입도 가능
 
-
         if(this.shadowRoot) 
         {
             this.shadowRoot.textContent = '';
@@ -126,7 +110,6 @@ class NameCard extends ComponentABS{
         if((this.editting)) this._setEditable();
         else this._setDisEditable();  
 
-        console.log(this.editting);
     }
 
     _setSettingVisible(visible)
@@ -158,10 +141,34 @@ class NameCard extends ComponentABS{
 
     _changeButton(element, config)
     {
-        console.log(element);
         element.classList.remove(config.remove_calss);
         element.classList.add(config.add_calss);
         element.innerHTML = config.text;
+    }
+
+    _modifyCard()
+    {
+        const form = this.shadowRoot.querySelector('form');
+        const name = this.querySelector('span[slot=name]');
+        const email = this.querySelector('span[slot=email]');
+        const phone = this.querySelector('span[slot=phone]');
+        const role = this.querySelector('span[slot=role]');
+        const company_name = this.querySelector('p[slot=company_name]');
+        this.user_data.name = name.innerText;
+        this.user_data.email = email.innerText;
+        this.user_data.phone = phone.innerText;
+        this.user_data.role = role.innerText;
+        this.user_data.company_name = company_name.innerText;
+        WebSql.modifyCard(form, this.user_data).then(() => {
+            this.post_message('done_modify_name_card', null);
+        }); 
+    }
+    _deleteCard()
+    {
+        WebSql.deleteCard(this.user_data.rowid).then(() => {
+            this.post_message('done_delete_name_card', null);
+            this.remove();
+        }); 
     }
 
 }

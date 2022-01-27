@@ -61,17 +61,6 @@ class NameCardList extends ComponentABS{
         console.log(`${name}, ${oldValue}, ${newValue},`);
     }
 
-    getComponentProp(data_set_value)
-    {
-        const component_prop = {};
-        
-        switch(data_set_value.exam_type)
-        {
-            default : console.log(data_set_value);
-        }
-        return component_prop;
-    }
-
     _render(list = null)
     {
         const shadowRoot = this.attachShadow({mode: 'open'});

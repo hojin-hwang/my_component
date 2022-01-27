@@ -50,6 +50,25 @@ class WebSql{
         })    
     }
 
+    static modifyCard(form, user_data)
+    {
+        const web_sql_db = this.web_sql_db;
+        return new Promise((resolve, reject) => {
+            web_sql_db.transaction(tx => {
+                tx.executeSql(`UPDATE NAMECARDS SET name=?, email=?, phone=?, role=?, profile_img=?, company_name=?  WHERE rowid=?`, 
+                                [user_data.name, user_data.email, user_data.phone, user_data.role, user_data.profile_img, user_data.company_name, user_data.rowid], (tx, result) => {
+                    console.log(tx, result)
+                }, (tx, result) => {
+                    console.error(tx, result)
+                })
+            }, [], () => {
+                resolve()
+            }, () => {
+                reject()
+            })
+        })    
+    }
+
     static insertCard(form)
     {
         const new_data = {};
