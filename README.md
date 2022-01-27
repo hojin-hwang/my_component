@@ -26,4 +26,4 @@
 ## Test
 + VS code -> Extension -> Live Server install
 + index.html -> 오른쪽 마우스 -> Open with Live Sever 
-<img src="./github.png" width="400px"  title="Screen shot"/>
+<img src="https://github.com/hojin-hwang/my_component/blob/main/assets/imgs/screen_shot.png" width="400px"  title="Screen shot"/>
