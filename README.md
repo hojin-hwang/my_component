@@ -17,4 +17,4 @@
 ## ramdom Image 사용
 + https://unsplash.com/ 가입후 
 + https://unsplash.com/developers -> Your Apps에서 Demo App추가
-    - Access Key값을 구한다.
+    + Access Key값을 구한다
