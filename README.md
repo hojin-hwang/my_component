@@ -26,3 +26,4 @@
 ## Test
 + VS code -> Extension -> Live Server install
 + index.html -> 오른쪽 마우스 -> Open with Live Sever 
+<img src="./github.png" width="400px"  title="Screen shot"/>
