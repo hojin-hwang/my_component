@@ -27,4 +27,3 @@
 + VS code -> Extension -> Live Server install
 + index.html -> 오른쪽 마우스 -> Open with Live Sever 
 <img src="https://github.com/hojin-hwang/my_component/blob/main/assets/imgs/screen_shot.png" width="400px"  title="Screen shot"/>
-+ 개인정보는 없습니다.
