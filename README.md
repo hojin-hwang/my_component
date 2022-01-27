@@ -1,7 +1,10 @@
-# my_component
+# Name Card component
 + 간단한 컴포넌트 테스트 페이지 입니다
 + 로그인은 Firebase를 사용했습니다. 
-+ firebase Config는 각자 작성하시기 바랍니다.
+    + firebase Config는 각자 작성하시기 바랍니다.
++ DB는 web sql을 사용했습니다.
++ profile img는 랜덤이미지를 사용합니다.
+    + file upload기능은 없습니다.
 
 ## 개략적인 설명
 + 모든 이벤트의 처리는 대부분 window.postMessage({msg:message, data:data}, location.origin); 로 처리하고
