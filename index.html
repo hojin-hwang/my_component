@@ -6,7 +6,35 @@
         </style>
     </head>
     <body>
-        <nav-bar></nav-bar>
+        <nav-bar>
+            <template id="nav_bar">
+                <style>
+                    nav{
+                        background-color: green;
+                        color:white;
+                        display: flex;
+                        justify-content: space-between;
+                        padding:12px;
+                        font-size:18px;
+                    }
+                    button.title-btn
+                    {
+                        background-color: green;
+                        color : white;
+                        font-size:18px;
+                        border:none;
+                    }
+                    button.command-show-empty-card{
+                        cursor: pointer;
+                    }
+                </style>
+            
+                <nav>
+                    <button class="title-btn">Name Card</span>
+                    <button class="login-btn command-open-login-form"> Login </button>
+                </nav>
+            </template>
+        </nav-bar>
         
         <firebase-login></firebase-login>
         
@@ -16,33 +44,7 @@
 
         
 
-<template id="nav_bar">
-    <style>
-        nav{
-            background-color: green;
-            color:white;
-            display: flex;
-            justify-content: space-between;
-            padding:12px;
-            font-size:18px;
-        }
-        button.title-btn
-        {
-            background-color: green;
-            color : white;
-            font-size:18px;
-            border:none;
-        }
-        button.command-show-empty-card{
-            cursor: pointer;
-        }
-    </style>
 
-    <nav>
-        <button class="title-btn">Name Card</span>
-        <button class="login-btn command-open-login-form"> Login </button>
-    </nav>
-</template>
 
 <template id="empty_name_card">
     <style>
