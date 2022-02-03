@@ -62,7 +62,7 @@ class NavBar extends ComponentABS{
 
     _render()
     {
-        const template = this.querySelector('#nav_bar');
+        const template = this.querySelector('template');
         if(this.shadowRoot) 
         {
             this.shadowRoot.textContent = '';
