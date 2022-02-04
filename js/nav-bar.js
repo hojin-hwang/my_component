@@ -73,7 +73,7 @@ class NavBar extends ComponentABS{
             const shadowRoot = this.attachShadow({mode: 'open'});
             shadowRoot.appendChild(template.content.cloneNode(true));
         }
-        console.log(this.is_login);
+        this.shadowRoot.querySelector('.login-btn').removeAttribute('disabled');
         if(this.is_login) this._set_logout_btn();
         else this._set_login_btn()
     }
@@ -82,7 +82,7 @@ class NavBar extends ComponentABS{
     {
         this.shadowRoot.querySelector('.login-btn').classList.remove('command-logout');
         this.shadowRoot.querySelector('.login-btn').classList.add('command-open-login-form');
-        this.shadowRoot.querySelector('.login-btn').innerHTML = 'Login';
+        this.shadowRoot.querySelector('.login-btn').innerHTML = 'Log in';
 
         this.shadowRoot.querySelector('.title-btn').classList.remove('command-show-empty-card');
         this.shadowRoot.querySelector('.title-btn').innerHTML = 'Name Card';
